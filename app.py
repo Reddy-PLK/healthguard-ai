@@ -6,10 +6,8 @@ from flask import Flask, render_template, request
 # Create Flask app
 app = Flask(__name__)
 
-# Get base directory
+# Load model
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Load trained model
 MODEL_PATH = os.path.join(BASE_DIR, "model", "health_model.pkl")
 
 model = joblib.load(MODEL_PATH)
@@ -21,23 +19,23 @@ def home():
     prediction = None
 
     if request.method == "POST":
-        try:
-            # Get inputs from form
-            fever = int(request.form["fever"])
-            cough = int(request.form["cough"])
-            headache = int(request.form["headache"])
-            breathing = int(request.form["breathing"])
-            fatigue = int(request.form["fatigue"])
 
-            # Create input array
-            input_data = np.array(
-                [[fever, cough, headache, breathing, fatigue]]
-            )
+        try:
+            fever = float(request.form["fever"])
+            cough = float(request.form["cough"])
+            fatigue = float(request.form["fatigue"])
+            headache = float(request.form["headache"])
+
+            # Make input array
+            data = np.array([[fever, cough, fatigue, headache]])
 
             # Predict
-            result = model.predict(input_data)
+            result = model.predict(data)[0]
 
-            prediction = result[0]
+            if result == 1:
+                prediction = "⚠️ High Health Risk. Please consult a doctor."
+            else:
+                prediction = "✅ Low Health Risk. You seem fine."
 
         except Exception as e:
             prediction = "Error: " + str(e)
@@ -45,7 +43,6 @@ def home():
     return render_template("index.html", prediction=prediction)
 
 
-# Run app (for Render + local)
 if __name__ == "__main__":
 
     port = int(os.environ.get("PORT", 10000))
