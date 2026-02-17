@@ -1,65 +1,60 @@
 from flask import Flask, render_template, request
 import joblib
+import numpy as np
 import os
-
 
 app = Flask(__name__)
 
-
-# Load trained model
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, "model", "health_model.pkl")
-
-model = joblib.load(MODEL_PATH)
+# Load model
+model = joblib.load("model/health_model.pkl")
 
 
-# Home page
+# Home Page
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("home.html")
 
 
-# Prediction route
+# Prediction Page (Form)
+@app.route("/check")
+def check():
+    return render_template("predict.html")
+
+
+# About Page
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+
+# Contact Page
+@app.route("/contact")
+def contact():
+    return render_template("contact.html")
+
+
+# Prediction Logic
 @app.route("/predict", methods=["POST"])
 def predict():
 
-    try:
-        fever = float(request.form["fever"])
-        cough = float(request.form["cough"])
-        headache = float(request.form["headache"])
-        breathing = float(request.form["breathing"])
-        fatigue = float(request.form["fatigue"])
+    fever = float(request.form["fever"])
+    cough = float(request.form["cough"])
+    fatigue = float(request.form["fatigue"])
+    headache = float(request.form["headache"])
+    breathing = float(request.form["breathing"])
 
-        # Input in same order as training
-        input_data = [[
-            fever,
-            cough,
-            headache,
-            breathing,
-            fatigue
-        ]]
+    data = np.array([[fever, cough, fatigue, headache, breathing]])
 
-        prediction = model.predict(input_data)[0]
+    result = model.predict(data)[0]
 
-        return render_template(
-            "index.html",
-            prediction=f"Predicted Disease: {prediction}"
-        )
+    if result == 1:
+        output = "⚠️ High Health Risk! Please consult a doctor."
+    else:
+        output = "✅ Low Health Risk. You are doing well!"
 
-    except Exception as e:
-        return render_template(
-            "index.html",
-            prediction=f"Error: {str(e)}"
-        )
+    return render_template("predict.html", prediction=output)
 
 
-# Run server
 if __name__ == "__main__":
-
     port = int(os.environ.get("PORT", 10000))
-
-    app.run(
-        host="0.0.0.0",
-        port=port,
-        debug=False
-    )
+    app.run(host="0.0.0.0", port=port)
