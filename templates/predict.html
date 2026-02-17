@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Health Check</title>
+
+<style>
+
+body{
+    font-family:Poppins,Arial;
+    background:linear-gradient(135deg,#141e30,#243b55);
+    color:white;
+    text-align:center;
+    padding:50px;
+}
+
+form{
+    width:350px;
+    margin:auto;
+    background:rgba(255,255,255,0.1);
+    padding:25px;
+    border-radius:15px;
+}
+
+input{
+    width:90%;
+    padding:10px;
+    margin:10px;
+    border:none;
+    border-radius:6px;
+}
+
+button{
+    padding:10px 20px;
+    background:#00fff0;
+    border:none;
+    border-radius:6px;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.result{
+    margin-top:20px;
+    font-weight:600;
+}
+
+a{
+    color:#00fff0;
+    text-decoration:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>🩺 Health Check</h1>
+
+<form action="/predict" method="post">
+
+    <input type="number" step="any" name="fever" placeholder="Fever" required>
+    <input type="number" step="any" name="cough" placeholder="Cough" required>
+    <input type="number" step="any" name="fatigue" placeholder="Fatigue" required>
+    <input type="number" step="any" name="headache" placeholder="Headache" required>
+    <input type="number" step="any" name="breathing" placeholder="Breathing" required>
+
+    <button type="submit">Analyze</button>
+
+</form>
+
+{% if prediction %}
+<div class="result">
+    {{ prediction }}
+</div>
+{% endif %}
+
+<br>
+<a href="/">⬅ Back Home</a>
+
+</body>
+</html>
