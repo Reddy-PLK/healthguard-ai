@@ -2,76 +2,40 @@
 <html>
 <head>
 
-<title>Health Check | HealthGuard</title>
+<title>Health Check</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 
 <style>
 
 body{
-    margin:0;
-    background:linear-gradient(135deg,#020024,#090979,#00d4ff);
-    font-family:Poppins;
+    font-family:Arial;
+    background:#0f172a;
     color:white;
+    text-align:center;
 }
 
-/* Navbar */
-nav{
-    background:rgba(0,0,0,0.7);
-    padding:15px;
-    display:flex;
-    justify-content:space-between;
-}
-
-nav a{
-    color:white;
-    margin:15px;
-    text-decoration:none;
-}
-
-nav a:hover{
-    color:cyan;
-}
-
-/* Card */
-.container{
-    max-width:900px;
-    margin:auto;
-    padding:40px;
-}
-
-.card{
-    background:rgba(255,255,255,0.1);
-    padding:30px;
+form{
+    background:#1e293b;
+    width:350px;
+    margin:50px auto;
+    padding:25px;
     border-radius:15px;
-    backdrop-filter:blur(10px);
-    box-shadow:0 0 20px cyan;
-    animation:fade 1s;
 }
 
-@keyframes fade{
-    from{opacity:0; transform:translateY(20px);}
-    to{opacity:1;}
-}
-
-/* Form */
 input{
-    width:100%;
+    width:90%;
     padding:10px;
-    margin:10px 0;
-    border-radius:8px;
+    margin:10px;
     border:none;
+    border-radius:8px;
 }
 
 button{
-    width:100%;
-    padding:12px;
+    padding:12px 25px;
     background:cyan;
     border:none;
-    border-radius:8px;
-    font-size:16px;
+    border-radius:20px;
     cursor:pointer;
 }
 
@@ -79,14 +43,10 @@ button:hover{
     background:#00ffaa;
 }
 
-.result{
-    text-align:center;
-    margin-top:20px;
-    font-size:20px;
+canvas{
+    max-width:400px;
+    margin:auto;
 }
-
-.safe{color:lightgreen;}
-.danger{color:orange;}
 
 </style>
 
@@ -94,36 +54,20 @@ button:hover{
 
 <body>
 
-<!-- NAVBAR -->
-<nav>
-    <h2>💙 HealthGuard</h2>
-
-    <div>
-        <a href="/">Home</a>
-        <a href="/check">Check</a>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
-    </div>
-</nav>
+<h2>🩺 Health Analysis</h2>
 
 
-<div class="container">
+<form action="/predict" method="post">
 
-<div class="card">
+<input type="number" step="any" name="fever" placeholder="Fever" required>
 
-<h2>Health Analyzer</h2>
+<input type="number" step="any" name="cough" placeholder="Cough" required>
 
-<form method="POST" action="/predict">
+<input type="number" step="any" name="headache" placeholder="Headache" required>
 
-<input type="number" step="any" name="fever" placeholder="Fever (0-10)" required>
+<input type="number" step="any" name="breathing_problem" placeholder="Breathing Problem" required>
 
-<input type="number" step="any" name="cough" placeholder="Cough (0-10)" required>
-
-<input type="number" step="any" name="headache" placeholder="Headache (0-10)" required>
-
-<input type="number" step="any" name="breathing_problem" placeholder="Breathing (0-10)" required>
-
-<input type="number" step="any" name="fatigue" placeholder="Fatigue (0-10)" required>
+<input type="number" step="any" name="fatigue" placeholder="Fatigue" required>
 
 <button type="submit">Analyze</button>
 
@@ -132,54 +76,59 @@ button:hover{
 
 {% if prediction %}
 
-<div class="result {{status}}">
-{{ prediction }}
-</div>
+<h3>{{ prediction }}</h3>
 
 <canvas id="chart"></canvas>
 
-{% endif %}
-
-</div>
-
-</div>
-
-
-<!-- CHART -->
 <script>
 
-{% if values %}
+var values = {{ values | safe }};
 
-new Chart(document.getElementById("chart"), {
+var ctx = document.getElementById("chart");
 
-type: "radar",
+new Chart(ctx, {
 
-data: {
-labels: ["Fever","Cough","Headache","Breathing","Fatigue"],
+    type: "radar",
 
-datasets: [{
-label: "Health Level",
-data: {{ values }},
-borderColor:"cyan",
-backgroundColor:"rgba(0,255,255,0.2)",
-borderWidth:2
-}]
-},
+    data: {
 
-options:{
-scales:{
-r:{
-beginAtZero:true,
-max:10
-}
-}
-}
+        labels: [
+            "Fever",
+            "Cough",
+            "Headache",
+            "Breathing",
+            "Fatigue"
+        ],
+
+        datasets: [{
+
+            label: "Health Levels",
+
+            data: values,
+
+            backgroundColor: "rgba(0,255,255,0.2)",
+
+            borderColor: "cyan",
+
+            borderWidth: 2
+
+        }]
+    },
+
+    options: {
+        scales: {
+            r: {
+                beginAtZero: true,
+                max: 10
+            }
+        }
+    }
 
 });
 
-{% endif %}
-
 </script>
+
+{% endif %}
 
 </body>
 </html>
