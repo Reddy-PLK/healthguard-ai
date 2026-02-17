@@ -1,76 +1,254 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>HealthGuard AI</title>
+<meta charset="UTF-8">
+<title>HealthGuard AI</title>
 
-    <style>
-        body {
-            font-family: Arial;
-            background: #f2f2f2;
-            text-align: center;
-            padding: 40px;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-        form {
-            background: white;
-            width: 320px;
-            margin: auto;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px gray;
-        }
+<style>
 
-        input {
-            width: 90%;
-            padding: 8px;
-            margin: 8px;
-        }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: 'Poppins', sans-serif;
+}
 
-        button {
-            padding: 10px 25px;
-            background: green;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
+body{
+    min-height:100vh;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+}
 
-        button:hover {
-            background: darkgreen;
-        }
+/* NAVBAR */
 
-        h3 {
-            color: blue;
-        }
-    </style>
+nav{
+    width:100%;
+    padding:20px 80px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+}
+
+nav h2{
+    color:#00f2ff;
+    letter-spacing:1px;
+}
+
+nav ul{
+    display:flex;
+    list-style:none;
+}
+
+nav ul li{
+    margin-left:30px;
+}
+
+nav ul li a{
+    text-decoration:none;
+    color:white;
+    font-weight:500;
+    transition:0.3s;
+}
+
+nav ul li a:hover{
+    color:#00f2ff;
+}
+
+/* HERO */
+
+.hero{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:80px;
+    min-height:90vh;
+}
+
+.hero-text{
+    width:50%;
+    animation:fadeIn 1.5s ease;
+}
+
+.hero-text h1{
+    font-size:50px;
+    margin-bottom:20px;
+}
+
+.hero-text span{
+    color:#00f2ff;
+}
+
+.hero-text p{
+    font-size:18px;
+    line-height:1.6;
+    margin-bottom:30px;
+    color:#ddd;
+}
+
+.hero-text button{
+    padding:12px 30px;
+    background:#00f2ff;
+    border:none;
+    border-radius:25px;
+    font-size:16px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.hero-text button:hover{
+    background:#00c2cc;
+}
+
+/* CARD */
+
+.card{
+    width:400px;
+    background: rgba(255,255,255,0.08);
+    border-radius:15px;
+    padding:30px;
+    box-shadow:0 0 30px rgba(0,242,255,0.3);
+    animation:slideUp 1.5s ease;
+}
+
+.card h3{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.card input{
+    width:100%;
+    padding:10px;
+    margin:10px 0;
+    border:none;
+    border-radius:8px;
+    outline:none;
+}
+
+.card button{
+    width:100%;
+    padding:12px;
+    background:#00f2ff;
+    border:none;
+    border-radius:20px;
+    font-size:16px;
+    cursor:pointer;
+    margin-top:15px;
+}
+
+.card button:hover{
+    background:#00c2cc;
+}
+
+.result{
+    text-align:center;
+    margin-top:20px;
+    font-weight:600;
+    color:#00f2ff;
+}
+
+/* FOOTER */
+
+footer{
+    text-align:center;
+    padding:20px;
+    background: rgba(0,0,0,0.4);
+    font-size:14px;
+    color:#aaa;
+}
+
+/* ANIMATIONS */
+
+@keyframes fadeIn{
+    from{opacity:0;transform:translateX(-50px);}
+    to{opacity:1;transform:translateX(0);}
+}
+
+@keyframes slideUp{
+    from{opacity:0;transform:translateY(50px);}
+    to{opacity:1;transform:translateY(0);}
+}
+
+</style>
 </head>
 
 <body>
 
-<h1>💙 HealthGuard AI</h1>
-<p>Check your basic health risk</p>
+<!-- NAVBAR -->
 
-<form method="POST">
+<nav>
+    <h2>💙 HealthGuard AI</h2>
 
-    <input type="number" step="any" name="fever" placeholder="Fever Level" required>
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Predict</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+    </ul>
+</nav>
 
-    <input type="number" step="any" name="cough" placeholder="Cough Severity" required>
+<!-- HERO -->
 
-    <input type="number" step="any" name="fatigue" placeholder="Fatigue Level" required>
+<section class="hero">
 
-    <input type="number" step="any" name="headache" placeholder="Headache Level" required>
+    <div class="hero-text">
 
-    <br><br>
+        <h1>AI Powered <span>Health Risk</span><br>Prediction System</h1>
 
-    <button type="submit">Check Health</button>
+        <p>
+            HealthGuard AI uses Machine Learning to analyze your symptoms
+            and predict potential health risks instantly.
+            Fast, reliable, and secure.
+        </p>
 
-</form>
+        <button onclick="document.getElementById('form').scrollIntoView({behavior:'smooth'})">
+            Try Now 🚀
+        </button>
 
-<br>
+    </div>
 
-{% if prediction %}
-<h3>{{ prediction }}</h3>
-{% endif %}
+
+    <!-- CARD -->
+
+    <div class="card" id="form">
+
+        <h3>Check Your Health</h3>
+
+        <form method="POST">
+
+            <input type="number" step="any" name="fever" placeholder="Fever Level" required>
+
+            <input type="number" step="any" name="cough" placeholder="Cough Severity" required>
+
+            <input type="number" step="any" name="fatigue" placeholder="Fatigue Level" required>
+
+            <input type="number" step="any" name="headache" placeholder="Headache Level" required>
+
+            <button type="submit">Analyze Now</button>
+
+        </form>
+
+        {% if prediction %}
+        <div class="result">
+            {{ prediction }}
+        </div>
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer>
+    ⚠️ For Educational Purposes Only | Not Medical Advice <br>
+    © 2026 HealthGuard AI | Built by You 💪
+</footer>
+
 
 </body>
 </html>
