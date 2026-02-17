@@ -23,7 +23,7 @@ print(data.columns)
 
 
 # Features and target
-X = data[["fever", "cough", "headache", "breathing_problem", "fatigue"]]
+X = data[["fever", "cough", "headache", "fatigue", "breathing_problem"]]
 y = data["disease"]
 
 
