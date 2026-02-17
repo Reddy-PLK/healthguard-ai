@@ -5,56 +5,98 @@ import os
 
 app = Flask(__name__)
 
-# Load model
+# Load trained model
 model = joblib.load("model/health_model.pkl")
 
 
-# Home Page
+# ---------------- HOME ----------------
 @app.route("/")
 def home():
     return render_template("home.html")
 
 
-# Prediction Page (Form)
+# ---------------- CHECK PAGE ----------------
 @app.route("/check")
 def check():
     return render_template("predict.html")
 
 
-# About Page
+# ---------------- ABOUT ----------------
 @app.route("/about")
 def about():
     return render_template("about.html")
 
 
-# Contact Page
+# ---------------- CONTACT ----------------
 @app.route("/contact")
 def contact():
     return render_template("contact.html")
 
 
-# Prediction Logic
+# ---------------- PREDICT ----------------
 @app.route("/predict", methods=["POST"])
 def predict():
 
-    fever = float(request.form["fever"])
-    cough = float(request.form["cough"])
-    fatigue = float(request.form["fatigue"])
-    headache = float(request.form["headache"])
-    breathing = float(request.form["breathing"])
+    try:
 
-    data = np.array([[fever, cough, fatigue, headache, breathing]])
+        # Get form data
+        fever = float(request.form.get("fever"))
+        cough = float(request.form.get("cough"))
+        headache = float(request.form.get("headache"))
+        breathing = float(request.form.get("breathing"))
+        fatigue = float(request.form.get("fatigue"))
 
-    result = model.predict(data)[0]
+        # IMPORTANT: Same order as training
+        data = np.array([[
+            fever,
+            cough,
+            headache,
+            breathing,
+            fatigue
+        ]])
 
-    if result == 1:
-        output = "⚠️ High Health Risk! Please consult a doctor."
-    else:
-        output = "✅ Low Health Risk. You are doing well!"
+        # Predict
+        result = model.predict(data)[0]
 
-    return render_template("predict.html", prediction=output)
+        # Message
+        if result == 1:
+            output = "⚠️ High Health Risk! Please consult a doctor."
+            status = "danger"
+        else:
+            output = "✅ Low Health Risk. You are doing well!"
+            status = "safe"
+
+        # Values for chart
+        values = [
+            fever,
+            cough,
+            headache,
+            breathing,
+            fatigue
+        ]
+
+        return render_template(
+            "predict.html",
+            prediction=output,
+            status=status,
+            values=values
+        )
+
+    except Exception as e:
+
+        return render_template(
+            "predict.html",
+            prediction="❌ Error: " + str(e)
+        )
 
 
+# ---------------- RUN SERVER ----------------
 if __name__ == "__main__":
+
     port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+
+    app.run(
+        host="0.0.0.0",
+        port=port,
+        debug=False
+    )
