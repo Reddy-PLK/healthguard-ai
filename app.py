@@ -48,14 +48,12 @@ def contact():
 def predict():
 
     try:
-        # Get inputs
         fever = float(request.form["fever"])
         cough = float(request.form["cough"])
         headache = float(request.form["headache"])
         breathing = float(request.form["breathing_problem"])
         fatigue = float(request.form["fatigue"])
 
-        # Create DataFrame (safe input)
         input_data = pd.DataFrame([{
             "fever": fever,
             "cough": cough,
@@ -64,33 +62,23 @@ def predict():
             "fatigue": fatigue
         }])
 
-        # Predict
         result = model.predict(input_data)[0]
 
-        # Output
         if result == 1:
             output = "⚠️ High Health Risk! Please consult a doctor."
-            status = "danger"
         else:
             output = "✅ Low Health Risk. You are doing well!"
-            status = "safe"
 
-        values = [fever, cough, headache, breathing, fatigue]
-
-        return render_template(
-            "predict.html",
-            prediction=output,
-            status=status,
-            values=values
-        )
+        return render_template("predict.html", prediction=output)
 
     except Exception as e:
 
+        print("FORM DATA:", request.form)
         print("ERROR:", e)
 
         return render_template(
             "predict.html",
-            prediction="❌ Please fill all fields correctly!"
+            prediction="❌ Please fill all fields correctly"
         )
 
 
