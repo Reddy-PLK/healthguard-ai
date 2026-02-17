@@ -4,8 +4,6 @@
 
 <title>Health Check</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
 
 body{
@@ -43,11 +41,6 @@ button:hover{
     background:#00ffaa;
 }
 
-canvas{
-    max-width:400px;
-    margin:auto;
-}
-
 </style>
 
 </head>
@@ -75,59 +68,7 @@ canvas{
 
 
 {% if prediction %}
-
 <h3>{{ prediction }}</h3>
-
-<canvas id="chart"></canvas>
-
-<script>
-
-var values = {{ values | safe }};
-
-var ctx = document.getElementById("chart");
-
-new Chart(ctx, {
-
-    type: "radar",
-
-    data: {
-
-        labels: [
-            "Fever",
-            "Cough",
-            "Headache",
-            "Breathing",
-            "Fatigue"
-        ],
-
-        datasets: [{
-
-            label: "Health Levels",
-
-            data: values,
-
-            backgroundColor: "rgba(0,255,255,0.2)",
-
-            borderColor: "cyan",
-
-            borderWidth: 2
-
-        }]
-    },
-
-    options: {
-        scales: {
-            r: {
-                beginAtZero: true,
-                max: 10
-            }
-        }
-    }
-
-});
-
-</script>
-
 {% endif %}
 
 </body>
