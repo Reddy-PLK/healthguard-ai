@@ -43,7 +43,7 @@ def predict():
         fever = float(request.form.get("fever"))
         cough = float(request.form.get("cough"))
         headache = float(request.form.get("headache"))
-        breathing = float(request.form.get("breathing"))
+        breathing = float(request.form.get("breathing_problem"))
         fatigue = float(request.form.get("fatigue"))
 
         # IMPORTANT: Same order as training
