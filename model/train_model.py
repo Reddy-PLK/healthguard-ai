@@ -3,24 +3,28 @@ import joblib
 import os
 
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 
 
-# Get root directory
+# ---------------- PATHS ----------------
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# File paths
 CSV_PATH = os.path.join(BASE_DIR, "symptoms.csv")
 MODEL_PATH = os.path.join(BASE_DIR, "model", "health_model.pkl")
 
 
-# Load dataset
+# ---------------- LOAD DATA ----------------
+
 data = pd.read_csv(CSV_PATH)
 
-print("Dataset Columns:")
-print(data.columns)
+print("Dataset Loaded Successfully")
+print("Columns:", data.columns)
 
 
-# Select required features
+# ---------------- FEATURES & TARGET ----------------
+
 X = data[[
     "fever",
     "cough",
@@ -32,17 +36,38 @@ X = data[[
 y = data["disease"]
 
 
-# Train model
-model = RandomForestClassifier(
-    n_estimators=150,
+# ---------------- SPLIT ----------------
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
     random_state=42
 )
 
-model.fit(X, y)
+
+# ---------------- TRAIN ----------------
+
+model = RandomForestClassifier(
+    n_estimators=100,
+    random_state=42
+)
+
+model.fit(X_train, y_train)
 
 
-# Save model
+# ---------------- TEST ----------------
+
+y_pred = model.predict(X_test)
+
+accuracy = accuracy_score(y_test, y_pred)
+
+print(f"Model Accuracy: {accuracy*100:.2f}%")
+
+
+# ---------------- SAVE ----------------
+
 joblib.dump(model, MODEL_PATH)
 
-print("Model trained successfully!")
-print("Saved at:", MODEL_PATH)
+print("Model Saved At:", MODEL_PATH)
+print("Training Completed Successfully")
