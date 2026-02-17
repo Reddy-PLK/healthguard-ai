@@ -1,46 +1,53 @@
-from flask import Flask, render_template, request
-import joblib
 import os
+import joblib
 import numpy as np
-model = joblib.load("model/health_model.pkl")
+from flask import Flask, render_template, request
+
+# Create Flask app
 app = Flask(__name__)
 
+# Get base directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Load trained model
-MODEL_PATH = os.path.join("model", "health_model.pkl")   # change name if different
+MODEL_PATH = os.path.join(BASE_DIR, "model", "health_model.pkl")
+
 model = joblib.load(MODEL_PATH)
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def home():
-    return render_template("index.html")
+
+    prediction = None
+
+    if request.method == "POST":
+        try:
+            # Get inputs from form
+            fever = int(request.form["fever"])
+            cough = int(request.form["cough"])
+            headache = int(request.form["headache"])
+            breathing = int(request.form["breathing"])
+            fatigue = int(request.form["fatigue"])
+
+            # Create input array
+            input_data = np.array(
+                [[fever, cough, headache, breathing, fatigue]]
+            )
+
+            # Predict
+            result = model.predict(input_data)
+
+            prediction = result[0]
+
+        except Exception as e:
+            prediction = "Error: " + str(e)
+
+    return render_template("index.html", prediction=prediction)
 
 
-@app.route("/predict", methods=["POST"])
-def predict():
-    try:
-        # Get user inputs
-        fever = float(request.form["fever"])
-        cough = float(request.form["cough"])
-        fatigue = float(request.form["fatigue"])
-        headache = float(request.form["headache"])
-
-        # Prepare input
-        input_data = np.array([[fever, cough, fatigue, headache]])
-
-        # Predict
-        result = model.predict(input_data)[0]
-
-        return render_template(
-            "index.html",
-            prediction=f"Health Risk Level: {result}"
-        )
-
-    except Exception as e:
-        return render_template(
-            "index.html",
-            prediction="Error: " + str(e)
-        )
-
-
+# Run app (for Render + local)
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+
+    port = int(os.environ.get("PORT", 10000))
+
+    app.run(host="0.0.0.0", port=port, debug=True)
