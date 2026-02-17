@@ -1,50 +1,60 @@
-import os
+from flask import Flask, render_template, request
 import joblib
 import numpy as np
-from flask import Flask, render_template, request
+import os
 
-# Create Flask app
 app = Flask(__name__)
 
 # Load model
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, "model", "health_model.pkl")
-
-model = joblib.load(MODEL_PATH)
+model = joblib.load("model/health_model.pkl")
 
 
-@app.route("/", methods=["GET", "POST"])
+# Home Page
+@app.route("/")
 def home():
+    return render_template("home.html")
 
-    prediction = None
 
-    if request.method == "POST":
+# Prediction Page (Form)
+@app.route("/check")
+def check():
+    return render_template("predict.html")
 
-        try:
-            fever = float(request.form["fever"])
-            cough = float(request.form["cough"])
-            fatigue = float(request.form["fatigue"])
-            headache = float(request.form["headache"])
 
-            # Make input array
-            data = np.array([[fever, cough, fatigue, headache]])
+# About Page
+@app.route("/about")
+def about():
+    return render_template("about.html")
 
-            # Predict
-            result = model.predict(data)[0]
 
-            if result == 1:
-                prediction = "⚠️ High Health Risk. Please consult a doctor."
-            else:
-                prediction = "✅ Low Health Risk. You seem fine."
+# Contact Page
+@app.route("/contact")
+def contact():
+    return render_template("contact.html")
 
-        except Exception as e:
-            prediction = "Error: " + str(e)
 
-    return render_template("index.html", prediction=prediction)
+# Prediction Logic
+@app.route("/predict", methods=["POST"])
+def predict():
+
+    fever = float(request.form["fever"])
+    cough = float(request.form["cough"])
+    fatigue = float(request.form["fatigue"])
+    headache = float(request.form["headache"])
+    breathing = float(request.form["breathing"])
+
+    data = np.array([[fever, cough, fatigue, headache, breathing]])
+
+    result = model.predict(data)[0]
+
+    if result == 1:
+        output = "⚠️ High Health Risk! Please consult a doctor."
+    else:
+        output = "✅ Low Health Risk. You are doing well!"
+
+    return render_template("predict.html", prediction=output)
 
 
 if __name__ == "__main__":
-
     port = int(os.environ.get("PORT", 10000))
-
     app.run(host="0.0.0.0", port=port)
