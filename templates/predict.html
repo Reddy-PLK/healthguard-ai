@@ -1,80 +1,185 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Health Check</title>
+
+<title>Health Check | HealthGuard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 
 <style>
 
 body{
-    font-family:Poppins,Arial;
-    background:linear-gradient(135deg,#141e30,#243b55);
+    margin:0;
+    background:linear-gradient(135deg,#020024,#090979,#00d4ff);
+    font-family:Poppins;
     color:white;
-    text-align:center;
-    padding:50px;
 }
 
-form{
-    width:350px;
+/* Navbar */
+nav{
+    background:rgba(0,0,0,0.7);
+    padding:15px;
+    display:flex;
+    justify-content:space-between;
+}
+
+nav a{
+    color:white;
+    margin:15px;
+    text-decoration:none;
+}
+
+nav a:hover{
+    color:cyan;
+}
+
+/* Card */
+.container{
+    max-width:900px;
     margin:auto;
-    background:rgba(255,255,255,0.1);
-    padding:25px;
-    border-radius:15px;
+    padding:40px;
 }
 
+.card{
+    background:rgba(255,255,255,0.1);
+    padding:30px;
+    border-radius:15px;
+    backdrop-filter:blur(10px);
+    box-shadow:0 0 20px cyan;
+    animation:fade 1s;
+}
+
+@keyframes fade{
+    from{opacity:0; transform:translateY(20px);}
+    to{opacity:1;}
+}
+
+/* Form */
 input{
-    width:90%;
+    width:100%;
     padding:10px;
-    margin:10px;
+    margin:10px 0;
+    border-radius:8px;
     border:none;
-    border-radius:6px;
 }
 
 button{
-    padding:10px 20px;
-    background:#00fff0;
+    width:100%;
+    padding:12px;
+    background:cyan;
     border:none;
-    border-radius:6px;
+    border-radius:8px;
     font-size:16px;
     cursor:pointer;
 }
 
-.result{
-    margin-top:20px;
-    font-weight:600;
+button:hover{
+    background:#00ffaa;
 }
 
-a{
-    color:#00fff0;
-    text-decoration:none;
+.result{
+    text-align:center;
+    margin-top:20px;
+    font-size:20px;
 }
+
+.safe{color:lightgreen;}
+.danger{color:orange;}
 
 </style>
+
 </head>
 
 <body>
 
-<h1>🩺 Health Check</h1>
+<!-- NAVBAR -->
+<nav>
+    <h2>💙 HealthGuard</h2>
 
-<form action="/predict" method="post">
+    <div>
+        <a href="/">Home</a>
+        <a href="/check">Check</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+    </div>
+</nav>
 
-    <input type="number" step="any" name="fever" placeholder="Fever" required>
-    <input type="number" step="any" name="cough" placeholder="Cough" required>
-    <input type="number" step="any" name="fatigue" placeholder="Fatigue" required>
-    <input type="number" step="any" name="headache" placeholder="Headache" required>
-    <input type="number" step="any" name="breathing" placeholder="Breathing" required>
 
-    <button type="submit">Analyze</button>
+<div class="container">
+
+<div class="card">
+
+<h2>Health Analyzer</h2>
+
+<form method="POST" action="/predict">
+
+<input type="number" step="any" name="fever" placeholder="Fever (0-10)" required>
+
+<input type="number" step="any" name="cough" placeholder="Cough (0-10)" required>
+
+<input type="number" step="any" name="headache" placeholder="Headache (0-10)" required>
+
+<input type="number" step="any" name="breathing" placeholder="Breathing (0-10)" required>
+
+<input type="number" step="any" name="fatigue" placeholder="Fatigue (0-10)" required>
+
+<button type="submit">Analyze</button>
 
 </form>
 
+
 {% if prediction %}
-<div class="result">
-    {{ prediction }}
+
+<div class="result {{status}}">
+{{ prediction }}
 </div>
+
+<canvas id="chart"></canvas>
+
 {% endif %}
 
-<br>
-<a href="/">⬅ Back Home</a>
+</div>
+
+</div>
+
+
+<!-- CHART -->
+<script>
+
+{% if values %}
+
+new Chart(document.getElementById("chart"), {
+
+type: "radar",
+
+data: {
+labels: ["Fever","Cough","Headache","Breathing","Fatigue"],
+
+datasets: [{
+label: "Health Level",
+data: {{ values }},
+borderColor:"cyan",
+backgroundColor:"rgba(0,255,255,0.2)",
+borderWidth:2
+}]
+},
+
+options:{
+scales:{
+r:{
+beginAtZero:true,
+max:10
+}
+}
+}
+
+});
+
+{% endif %}
+
+</script>
 
 </body>
 </html>
